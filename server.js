@@ -1,11 +1,7 @@
-// need express to interact with the front end
-const express = require("express");
-// need path for filename paths
-const path = require("path");
-// need fs to read and write to files
-const fs = require("fs");
 
-// creating an "express" server
+const express = require("express");
+const path = require("path");
+const fs = require("fs");
 const app = express();
 // Sets an Initial port for listeners
 const PORT = process.env.PORT || 9001;
@@ -63,10 +59,9 @@ app.post("/api/notes", function(req, res) {
     // changeit back to an array of objects & send it back to the browser(client)
     res.json(JSON.parse(notesData));
 
-    // error Handling
+
   } catch (err) {
     throw err;
-    console.error(err);
   }
 });
 
@@ -86,17 +81,16 @@ app.delete("/api/notes/:id", function(req, res) {
     notesData = JSON.stringify(notesData);
     // write the new notes to the file
     fs.writeFile("./db/db.json", notesData, "utf8", function(err) {
-      // error handling
+ 
       if (err) throw err;
     });
 
     // change it back to an array of objects & send it back to the browser (client)
     res.send(JSON.parse(notesData));
 
-    // error handling
+ 
   } catch (err) {
     throw err;
-    console.log(err);
   }
 });
 
