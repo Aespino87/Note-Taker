@@ -10,14 +10,14 @@ const PORT = process.env.PORT || 9001;
 
 let notesData = [];
 
-// Set up body parsing, static, and route middleware
+// Set up of body parsing, static, and route middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "./public")));
 
 // routes
 
-// api call response for all the notes, and sends the results to the browser as an array of object
+// Api call response for all the notes
 
 app.get("/api/notes", function(err, res) {
   try {
@@ -27,16 +27,15 @@ app.get("/api/notes", function(err, res) {
     // parse it so notesData is an array of objects
     notesData = JSON.parse(notesData);
 
-    // error handling
   } catch (err) {
     console.log("\n error (in app.get.catch):");
     console.log(err);
   }
-  //   send objects to the browser
+  //   Sends objects to the browser
   res.json(notesData);
 });
 
-// writes the new note to the json file
+// This adds new notes to the json file
 app.post("/api/notes", function(req, res) {
   try {
     // reads the json file
@@ -45,18 +44,17 @@ app.post("/api/notes", function(req, res) {
 
     // parse the data to get an array of objects
     notesData = JSON.parse(notesData);
-    // Set new notes id
     req.body.id = notesData.length;
     // add the new note to the array of note objects
-    notesData.push(req.body); // req.body - user input
-    // make it string(stringify)so you can write it to the file
+    notesData.push(req.body); 
+    // Makes the req into string so you can write it to the file
     notesData = JSON.stringify(notesData);
     // writes the new note to file
     fs.writeFile("./db/db.json", notesData, "utf8", function(err) {
       // error handling
       if (err) throw err;
     });
-    // changeit back to an array of objects & send it back to the browser(client)
+    // change it back to an array of objects & send it back to the browser(client)
     res.json(JSON.parse(notesData));
 
 
@@ -65,7 +63,7 @@ app.post("/api/notes", function(req, res) {
   }
 });
 
-// Delete a note
+// This part handles when the user deletes a note
 
 app.delete("/api/notes/:id", function(req, res) {
   try {
