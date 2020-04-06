@@ -1,114 +1,18 @@
-
 const express = require("express");
-const path = require("path");
-const fs = require("fs");
 const app = express();
-// Sets an Initial port for listeners
-const PORT = process.env.PORT || 9001;
 
-//  Initialize notesData
+const PORT = process.env.PORT || 3000;
 
-let notesData = [];
-
-// Set up of body parsing, static, and route middleware
-app.use(express.json());
+// Puts data to be encoded into the URL-encoded format
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "./public")));
+app.use(express.json());
 
-// routes
+app.use(express.static("public"));
 
-// Api call response for all the notes
+// Set the routes
+app.use(require("./routes/pageRoutes.js"));
+app.use(require("./routes/apiRoutes.js"));
 
-app.get("/api/notes", function(err, res) {
-  try {
-    // reads the notes from json file
-    notesData = fs.readFileSync("./db/db.json", "utf8");
-    console.log("hello!");
-    // parse it so notesData is an array of objects
-    notesData = JSON.parse(notesData);
-
-  } catch (err) {
-    console.log("\n error (in app.get.catch):");
-    console.log(err);
-  }
-  //   Sends objects to the browser
-  res.json(notesData);
-});
-
-// This adds new notes to the json file
-app.post("/api/notes", function(req, res) {
-  try {
-    // reads the json file
-    notesData = fs.readFileSync("./db/db.json", "utf8");
-    console.log(notesData);
-
-    // parse the data to get an array of objects
-    notesData = JSON.parse(notesData);
-    req.body.id = notesData.length;
-    // add the new note to the array of note objects
-    notesData.push(req.body); 
-    // Makes the req into string so you can write it to the file
-    notesData = JSON.stringify(notesData);
-    // writes the new note to file
-    fs.writeFile("./db/db.json", notesData, "utf8", function(err) {
-      // error handling
-      if (err) throw err;
-    });
-    // change it back to an array of objects & send it back to the browser(client)
-    res.json(JSON.parse(notesData));
-
-
-  } catch (err) {
-    throw err;
-  }
-});
-
-// This part handles when the user deletes a note
-
-app.delete("/api/notes/:id", function(req, res) {
-  try {
-    //  reads the json file
-    notesData = fs.readFileSync("./db/db.json", "utf8");
-    // parse the data to get an array of the objects
-    notesData = JSON.parse(notesData);
-    // delete the old note from the array on note objects
-    notesData = notesData.filter(function(note) {
-      return note.id != req.params.id;
-    });
-    // make it string(stringify)so you can write it to the file
-    notesData = JSON.stringify(notesData);
-    // write the new notes to the file
-    fs.writeFile("./db/db.json", notesData, "utf8", function(err) {
- 
-      if (err) throw err;
-    });
-
-    // change it back to an array of objects & send it back to the browser (client)
-    res.send(JSON.parse(notesData));
-
- 
-  } catch (err) {
-    throw err;
-  }
-});
-
-// HTML GET Requests
-
-// Web page when the Get started button is clicked
-app.get("/notes", function(req, res) {
-  res.sendFile(path.join(__dirname, "./public/notes.html"));
-});
-
-// If no matching route is found default to home
-app.get("*", function(req, res) {
-  res.sendFile(path.join(__dirname, "./public/index.html"));
-});
-
-app.get("/api/notes", function(req, res) {
-  return res.sendFile(path.json(__dirname, "./db/db.json"));
-});
-
-// Start the server on the port
-app.listen(PORT, function() {
-  console.log("SERVER IS LISTENING: " + PORT);
-});
+app.listen(PORT, () => {
+  console.log(`App running on port ${PORT}!`);
+}); 
